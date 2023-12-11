@@ -30,28 +30,57 @@
 <div th:insert="~{header :: header}"></div>
 <br>
 <div class="container">
+	
   <div class="row align-items-center">
-    <div class="col-md-6">
+    <div class="col">
       <div class="mb-3">
         <h5 class="card-title" style="font-weight: bold;">Lista contatti<span class="text-muted fw-normal ms-2"></span></h5>
       </div>
     </div>
-    <div th:if="${param.created}" class="alert alert-success">Contatto creato con successo.</div>
-    <div th:if="${param.deleted}" class="alert alert-success">Contatto eliminato con successo.</div>
-    <div th:if="${param.updated}" class="alert alert-success">Contatto aggiornato con successo.</div>
-    <div class="col-md-6">
+    
+    <!--
+    <div class="col">
+	    <form class="input-group rounded" th:action="@{/contatti/list}">
+		  <input type="search" name="keyword" th:value="${keyword}" class="form-control rounded" placeholder="Cerca" aria-label="Search" aria-describedby="search-addon" />
+		  <button id="search-button" type="submit" class="btn btn-primary">
+		    <svg
+			  width="24"
+			  height="24"
+			  viewBox="0 0 24 24"
+			  fill="none"
+			  xmlns="http://www.w3.org/2000/svg"
+			>
+			  <path
+			    fill-rule="evenodd"
+			    clip-rule="evenodd"
+			    d="M18.319 14.4326C20.7628 11.2941 20.542 6.75347 17.6569 3.86829C14.5327 0.744098 9.46734 0.744098 6.34315 3.86829C3.21895 6.99249 3.21895 12.0578 6.34315 15.182C9.22833 18.0672 13.769 18.2879 16.9075 15.8442C16.921 15.8595 16.9351 15.8745 16.9497 15.8891L21.1924 20.1317C21.5829 20.5223 22.2161 20.5223 22.6066 20.1317C22.9971 19.7412 22.9971 19.1081 22.6066 18.7175L18.364 14.4749C18.3493 14.4603 18.3343 14.4462 18.319 14.4326ZM16.2426 5.28251C18.5858 7.62565 18.5858 11.4246 16.2426 13.7678C13.8995 16.1109 10.1005 16.1109 7.75736 13.7678C5.41421 11.4246 5.41421 7.62565 7.75736 5.28251C10.1005 2.93936 13.8995 2.93936 16.2426 5.28251Z"
+			    fill="currentColor"
+			  />
+			</svg>
+		  </button>
+		</form>
+	</div>
+	-->
+	
+    <div class="col">
       <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
         <div>
           <a th:href="@{/contatti/creacontatto}" class="btn btn-primary"><i
-              class="bx bx-plus me-1"></i> Aggiungi</a>
+              class="bx bx-plus me-1"></i>Aggiungi</a>
         </div>
       </div>
     </div>
   </div>
+  
+  <div th:if="${param.created}" class="alert alert-success">Contatto creato con successo.</div>
+  <div th:if="${param.deleted}" class="alert alert-success">Contatto eliminato con successo.</div>
+  <div th:if="${param.updated}" class="alert alert-success">Contatto aggiornato con successo.</div>
+  
   <div class="row">
     <div class="col-lg-12">
       <div class="">
         <div class="table-responsive">
+			<input type="text" id="myInput" placeholder="Search for names..">
           <table class="table project-list-table table-nowrap align-middle table-borderless">
             <thead>
               <tr>
@@ -61,7 +90,7 @@
                 <th scope="col">Elimina</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="mytable">
               <tr th:each="contatto, iStat : ${contattoPage.content}"
 	                th:style="${iStat.even}? 'font-weight: bold;'"
 	                th:alt-title="${iStat.odd} ? 'odd' : 'even'">
@@ -104,6 +133,25 @@
     </div>
   </div>
 </div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script>
+	$(document).ready(function(){
+	    $("#myInput").on("input", function() {
+	        var value = $(this).val().toLowerCase();
+	        $("#mytable tr").filter(function() {
+	            if($(this).text().toLowerCase().indexOf(value) === -1){
+	              $(this).hide();
+	            }else{
+	              $(this).show();
+	            }
+	        });
+	    });
+	});
+</script>
 </body>
 </html>

@@ -34,10 +34,6 @@ public class ContattoService {
 	public List<Contatto> getContatti() {
 		return contattoRepository.findAll();
 	}
-	
-	public List<Contatto> getByUsername(String username) {
-		return contattoRepository.findByUsername(username);
-	}
 
 	public Contatto getContattoById(Long contattoId) {
 		return contattoRepository.findById(contattoId).orElseThrow(() -> new ResourceNotFoundException("Contatto", "id", contattoId));
@@ -103,9 +99,15 @@ public class ContattoService {
 		return true;
 	}
 	
-	public Page<Contatto> findPaginated(Pageable pageable, String username) {
-        List<Contatto> contatti = getByUsername(username);
+	public Page<Contatto> findPaginated(Pageable pageable, String username, String keyword) {
+		List<Contatto> contatti = new ArrayList<Contatto>();
 		
+		if(keyword != null) {
+        	contatti = contattoRepository.findByKeyword(keyword, username);
+        } else {
+        	contatti = contattoRepository.findByUsername(username);
+        }
+        
 		int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
@@ -123,5 +125,5 @@ public class ContattoService {
 
         return contattoPage;
     }
-	
+
 }

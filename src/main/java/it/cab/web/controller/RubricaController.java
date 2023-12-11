@@ -1,6 +1,5 @@
 package it.cab.web.controller;
 
-import java.awt.print.Book;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +36,6 @@ public class RubricaController {
 	@Autowired EmailService emailService;
 	@Autowired TelefonoService telefonoService;
 	
-	@GetMapping
-	public String getAllContattiByUsername(Model model, Principal principal) {
-		List<Contatto> contatti = this.contattoService.getByUsername(principal.getName());
-		
-		model.addAttribute("contatti", contatti);
-		model.addAttribute("module","contatti");
-		return "contatti";
-	}
-	
 	@GetMapping(path="/{id}")
 	public String getContatto(@PathVariable("id") long contattoId, Model model, Principal principal) {
 		Contatto contatto = contattoService.getContattoById(contattoId);
@@ -65,7 +55,7 @@ public class RubricaController {
     public String aggiornaContatto(@ModelAttribute Contatto contatto, Principal principal) {
         contatto.setUsername(principal.getName());
 		contattoService.updateContatto(contatto.getId(), contatto);
-        return "redirect:/contatti?updated"; // Redirect a una pagina di conferma
+        return "redirect:/contatti/list?updated"; // Redirect a una pagina di conferma
     }
 	
 	@GetMapping("/creacontatto")
@@ -103,13 +93,13 @@ public class RubricaController {
 
         contattoService.createContatto(contatto);
 		
-        return "redirect:/contatti?created"; // Redirect a una pagina di conferma
+        return "redirect:/contatti/list?created"; // Redirect a una pagina di conferma
     }
 	
 	@PostMapping("/delete")
     public String eliminaContatto(@RequestParam("id") Long contattoId) {
         contattoService.deleteContatto(contattoId);
-        return "redirect:/contatti?deleted";
+        return "redirect:/contatti/list?deleted";
     }
 	
 	@PostMapping("/deleteemail")
@@ -129,19 +119,27 @@ public class RubricaController {
     }
 	
 	@GetMapping("/list")
-    public String listBooks(Model model, 
+    public String listContatti(Model model, 
     		@RequestParam("page") Optional<Integer> page, 
     		@RequestParam("size") Optional<Integer> size,
-    		Principal principal
+    		Principal principal,
+    		@RequestParam("keyword") Optional<String> keyword
     ) {
         final int currentPage = page.orElse(1);
-        final int pageSize = size.orElse(10);
+        final int pageSize = size.orElse(8);
+        
+        
+        Page<Contatto> contattoPage = Page.empty();
+        
+        if(keyword.isPresent()) {
+        	contattoPage = contattoService.findPaginated(PageRequest.of(currentPage - 1, pageSize), principal.getName(), keyword.get());
+        } else {
+        	contattoPage = contattoService.findPaginated(PageRequest.of(currentPage - 1, pageSize), principal.getName(), null);
+        }
+        
+        model.addAttribute("contattoPage", contattoPage);
 
-        Page<Contatto> bookPage = contattoService.findPaginated(PageRequest.of(currentPage - 1, pageSize), principal.getName());
-
-        model.addAttribute("contattoPage", bookPage);
-
-        int totalPages = bookPage.getTotalPages();
+        int totalPages = contattoPage.getTotalPages();
         if (totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
                 .boxed()
@@ -151,5 +149,5 @@ public class RubricaController {
 
         return "list";
     }
-	
+
 }

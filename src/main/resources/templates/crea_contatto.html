@@ -45,7 +45,7 @@
               class="form-control" 
               type="text"
               id="nome" 
-              th:field="*{nome}" 
+              th:field="*{nome}"
               required
               name="nome"
               style="margin-top: 5px; margin-bottom: 5px;"
@@ -58,48 +58,58 @@
               class="form-control" 
               type="text"
               id="cognome" 
-              th:field="*{cognome}" 
+              th:field="*{cognome}"
               required
               name="cognome"
               style="margin-top: 5px; margin-bottom: 5px;"
             />
         </div>
 		
-		
         <label style="font-weight: bold;">Email</label>
-        <div th:each="email, emailIndex : *{emails}" class="form-group" style="position: relative; display: flex; flex-direction: column; justify-content: center;">
-	        <input 
-	        	class="form-control" 
-	        	type="text"
-	        	id="mail"
-	        	th:field="*{emails[__${emailIndex.index}__].mail}"
-	        	required
-	        	style="margin-top: 5px; margin-bottom: 5px;"
-	        />
-	        <button type="button" onclick="aggiungiCampo('emails')" class="btn btn-primary" style="margin-bottom: 5px; margin-top: 5px;">Aggiungi Email</button>
+        <div class="form-group"  style="position: relative; display: flex; flex-direction: column; justify-content: center;">
+			<div id="emails">        
+		        <div th:each="email, emailIndex : *{emails}" style="display: flex; flex-direction: column;">
+			        <input 
+			        	class="form-control" 
+			        	type="email"
+			        	th:id="'mail' + ${emailIndex.index}"
+			        	th:field="*{emails[__${emailIndex.index}__].mail}"
+			        	required
+			        	style="margin-top: 5px; margin-bottom: 5px;"
+			        	th:placeholder="'Email ' + ${emailIndex.index + 1}"
+			        />
+	        	</div>
+	        </div>
+	        <button type="button" onclick="aggiungiEmail()" class="btn btn-primary" style="margin-bottom: 5px; margin-top: 5px;">Aggiungi Email</button>
         </div>
         
         <label style="font-weight: bold;">Telefono</label>
-        <div th:each="telefono, telefonoIndex : *{telefoni}" class="form-group" style="position: relative; display: flex; flex-direction: column; justify-content: center;">
-	        <input 
-	        	class="form-control" 
-	        	type="tel"
-	        	id="numero"
-	        	th:field="*{telefoni[__${telefonoIndex.index}__].numero}"
-	        	required
-	        	style="margin-top: 5px; margin-bottom: 5px;"
-	        	placeholder="Numero"
-	        />
-	        <input 
-	        	class="form-control" 
-	        	type="text" 
-	        	id="descrizione"
-	        	th:field="*{telefoni[__${telefonoIndex.index}__].descrizione}"
-	        	required
-	        	style="margin-top: 5px; margin-bottom: 5px;"
-	        	placeholder="Descrizione"
-	        />
-	        <button type="button" onclick="aggiungiCampo('telefoni')" class="btn btn-primary" style="margin-bottom: 5px; margin-top: 5px;">Aggiungi Telefono</button>
+        <div class="form-group"  style="position: relative; display: flex; flex-direction: column; justify-content: center; width: 500px;">
+	        <div id="telefoni">
+		        <div th:each="telefono, telefonoIndex : *{telefoni}" style="display: flex; flex-direction: column;">
+			        <div style="display: flex;">
+				        <input 
+				        	class="form-control" 
+				        	type="tel"
+				        	th:id="'numero' + ${telefonoIndex.index}"
+				        	th:field="*{telefoni[__${telefonoIndex.index}__].numero}"
+				        	required
+				        	style="margin-top: 5px; margin-bottom: 5px; margin-right: 2.5px;"
+				        	th:placeholder="'Numero telefono ' + ${telefonoIndex.index + 1}"
+				        />
+				        <input 
+				        	class="form-control" 
+				        	type="text" 
+				        	th:id="'descrizione' + ${telefonoIndex.index}"
+				        	th:field="*{telefoni[__${telefonoIndex.index}__].descrizione}"
+				        	required
+				        	style="margin-top: 5px; margin-bottom: 5px; margin-left: 2.5px;"
+				        	th:placeholder="'Descrizione telefono ' + ${telefonoIndex.index + 1}"
+				        />
+		        	</div>
+		        </div>
+	        </div>
+	        <button type="button" onclick="aggiungiTelefono()" class="btn btn-primary" style="margin-bottom: 5px; margin-top: 5px;">Aggiungi Telefono</button>
         </div>
         
         <input 
@@ -111,8 +121,8 @@
 	    />
         
         <div style="display: flex; justify-content: center;">
-	      <button type="submit" class="btn btn-primary" style="margin-right: 5px;">Crea</button>
-	      <button onclick="goBack()" class="btn btn-primary">Indietro</button>
+	      <button type="submit" class="btn btn-primary" style="margin: 5px;">Crea</button>
+	      <button onclick="goBack()" class="btn btn-primary" style="margin: 5px;">Indietro</button>
       	</div>
       </form>
       </div>
@@ -120,21 +130,95 @@
 
 
 <script th:inline="javascript">
-    function goBack() {
-            window.history.back();
-        }
     
-    function aggiungiCampo(idCampo) {
-	    var container = document.getElementById(idCampo);
-	    var ultimoCampo = container.lastElementChild.cloneNode(true);
-	    container.appendChild(ultimoCampo);
-	}
-
-
-    function rimuoviCampo(button) {
-        var container = button.parentElement;
-        container.remove();
+    function goBack() {
+        window.history.back();
     }
+    
+    function aggiungiTelefono() {
+        var containerEmails = document.getElementById("telefoni");
+        
+        var campoNum = document.createElement("input");
+        var campoDes = document.createElement("input");
+        
+        campoNum.type = "tel";
+	    campoNum.id = "numero" + containerEmails.childElementCount;
+	    campoNum.className = "form-control";
+	    campoNum.required = "true";
+	    campoNum.style = "margin-top: 5px; margin-bottom: 5px; margin-right: 2.5px;";
+	    campoNum.placeholder = "Numero telefono " + (containerEmails.childElementCount + 1);
+	    campoNum.name = "telefoni[" + containerEmails.childElementCount + "].numero";
+	    
+        campoDes.type = "text";
+	    campoDes.id = "descrizione" + containerEmails.childElementCount;
+	    campoDes.className = "form-control";
+	    campoDes.required = "true";
+	    campoDes.style = "margin-top: 5px; margin-bottom: 5px; margin-left: 2.5px;";
+	    campoDes.placeholder = "Descrizione telefono " + (containerEmails.childElementCount + 1);
+	    campoDes.name = "telefoni[" + containerEmails.childElementCount + "].descrizione";
+	    
+	    var rimuovi = document.createElement("button");
+	    rimuovi.type = "button";
+	    rimuovi.onclick = function () {
+	        rimuoviTelefono(this);
+	    };
+	    rimuovi.className = "btn btn-danger";
+	    rimuovi.style = "margin-bottom: 5px; margin-top: 5px;";
+	    rimuovi.textContent = "Rimuovi Telefono";
+	    	    
+	    var div1 = document.createElement("div");
+	    div1.style = "display: flex;";
+	    div1.appendChild(campoNum);
+	    div1.appendChild(campoDes);
+	    
+	    var div2 = document.createElement("div");
+	    div2.style = "display: flex; flex-direction: column;";
+	    div2.appendChild(div1);
+	    div2.appendChild(rimuovi);
+	    
+	    containerEmails.appendChild(div2);
+    }
+    
+    function rimuoviTelefono(elemento) {
+	    var containerEmails = document.getElementById("telefoni");
+	    containerEmails.removeChild(elemento.parentElement);
+	}
+    
+    function aggiungiEmail() {
+       	var containerEmails = document.getElementById("emails");
+        
+        var campo = document.createElement("input");
+        
+        campo.type = "email";
+	    campo.id = "mail" + containerEmails.childElementCount;
+	    campo.className = "form-control";
+	    campo.required = "true";
+	    campo.style = "margin-top: 5px; margin-bottom: 5px;";
+	    campo.placeholder = "Email " + (containerEmails.childElementCount + 1);
+	    campo.name = "emails[" + containerEmails.childElementCount + "].mail";
+	    
+	    var rimuovi = document.createElement("button");
+	    rimuovi.type = "button";
+	    rimuovi.onclick = function () {
+	        rimuoviEmail(this);
+	    };
+	    rimuovi.className = "btn btn-danger";
+	    rimuovi.style = "margin-bottom: 5px; margin-top: 5px;";
+	    rimuovi.textContent = "Rimuovi Email";
+	    	    
+	    var div = document.createElement("div");
+	    div.style = "display: flex; flex-direction: column;";
+	    div.appendChild(campo);
+	    div.appendChild(rimuovi);
+	    
+	    containerEmails.appendChild(div);
+    }
+    
+    function rimuoviEmail(elemento) {
+	    var containerEmails = document.getElementById("emails");
+	    containerEmails.removeChild(elemento.parentElement);
+	}
+    
 </script>
 
 </body>

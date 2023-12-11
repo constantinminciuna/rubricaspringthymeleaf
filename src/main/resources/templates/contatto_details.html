@@ -80,11 +80,13 @@
 			        	style="margin-top: 5px; margin-bottom: 5px;"
 			        	th:placeholder="'Email ' + ${emailIndex.index + 1}"
 			        />
-			        <!--<button type="button" onclick="rimuoviEmail(this)" class="btn btn-danger" style="margin-bottom: 5px; margin-top: 5px;">Rimuovi Email</button>-->
-	        		<form th:action="@{/contatti/deleteemail}" method="post" style="display: flex;">
-					    <input type="hidden" name="id" th:value="${contatto.emails[__${emailIndex.index}__].id}"/>
-	        			<button class="btn btn-danger" type="submit" style="width: 100%; margin-bottom: 5px; margin-top: 5px;">Rimuovi Email</button>
-	        		</form>
+			        <div>
+		        		<button class="btn btn-danger" 
+		        				style="width: 100%; margin-bottom: 5px; margin-top: 5px;" 
+		        				type="button" 
+								th:onclick="'removeEmail(\'' + ${contatto.emails[__${emailIndex.index}__].id} + '\')'"
+						>Rimuovi Email</button>
+	        		</div>
 	        	</div>
 	        </div>
 	        <button type="button" onclick="aggiungiEmail()" class="btn btn-primary" style="margin-bottom: 5px; margin-top: 5px;">Aggiungi Email</button>
@@ -126,10 +128,13 @@
 				        	th:placeholder="'Descrizione telefono ' + ${telefonoIndex.index + 1}"
 				        />
 		        	</div>
-		        	<form th:action="@{/contatti/deletetelefono}" method="post">
-					    <input type="hidden" name="id" th:value="${contatto.telefoni[__${telefonoIndex.index}__].id}"/>
-	        			<button class="btn btn-danger" type="submit" style="width: 100%; margin-bottom: 5px; margin-top: 5px;">Rimuovi Telefono</button>
-	        		</form>
+	        		<div>
+						<button class="btn btn-danger" 
+								style="width: 100%; margin-bottom: 5px; margin-top: 5px;" 
+								type="button" 
+								th:onclick="'removeTelefono(\'' + ${contatto.telefoni[__${telefonoIndex.index}__].id} + '\')'"
+						>Rimuovi Telefono</button>
+					</div>
 		        </div>
 	        </div>
 	        <button type="button" onclick="aggiungiTelefono()" class="btn btn-primary" style="margin-bottom: 5px; margin-top: 5px;">Aggiungi Telefono</button>
@@ -137,13 +142,20 @@
         
         
         <div style="display: flex; justify-content: center;">
-	      <button type="submit" class="btn btn-primary" style="margin-right: 5px;">Salva</button>
-	      <button onclick="goBack()" class="btn btn-primary">Indietro</button>
+	      <button type="submit" class="btn btn-primary" style="margin: 5px;">  Salva  </button>
+	      <button onclick="goBack()" class="btn btn-primary" style="margin: 5px;">Indietro</button>
       	</div>
       </form>
       </div>
     </div>
 
+<form id="deleteEmailForm" th:action="@{/contatti/deleteemail}" method="post" style="display: none;">
+    <input type="hidden" name="id" id="emailIdToDelete" />
+</form>
+
+<form id="deleteTelefonoForm" th:action="@{/contatti/deletetelefono}" method="post" style="display: none;">
+    <input type="hidden" name="id" id="telefonoIdToDelete" />
+</form>
 
 <script th:inline="javascript">
     
@@ -234,6 +246,22 @@
 	    var containerEmails = document.getElementById("emails");
 	    containerEmails.removeChild(elemento.parentElement);
 	}
+	
+	function deleteEmail(emailId) {
+        // Set the email ID to delete in the hidden input
+        document.getElementById('emailIdToDelete').value = emailId;
+
+        // Submit the inner form
+        document.getElementById('deleteEmailForm').submit();
+    }
+    
+    function deleteTelefono(telefonoId) {
+        // Set the email ID to delete in the hidden input
+        document.getElementById('telefonoIdToDelete').value = telefonoId;
+
+        // Submit the inner form
+        document.getElementById('deleteTelefonoForm').submit();
+    }
     
 </script>
 
